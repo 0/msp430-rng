@@ -1,5 +1,7 @@
 #include <io.h>
 
+#include "rand.h"
+
 /**
  * Random number generator.
  *
@@ -37,9 +39,6 @@ unsigned int rand() {
 
 	return result;
 }
-
-#define M 49381                               // Multiplier
-#define I 8643                                // Increment
 
 /**
  * Pseudo-random number generator.
