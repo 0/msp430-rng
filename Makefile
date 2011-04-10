@@ -1,13 +1,17 @@
 CC = msp430-gcc
 CFLAGS = -Wall -Wno-main -Os -g -mmcu=msp430x2211
 
-OBJS=rand.o test.o
+.PHONY: rand test clean
 
-all: $(OBJS)
-	$(CC) $(CFLAGS) -o main.elf $(OBJS)
+rand: rand.o
+
+test: test.elf
+
+test.elf: rand.o test.o
+	$(CC) $(CFLAGS) -o $@ $^
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f main.elf $(OBJS)
+	rm -f test.elf rand.o test.o
