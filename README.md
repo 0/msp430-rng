@@ -33,3 +33,8 @@ To run the tests, `make test` and run `test.elf` on your MSP430.
 An implementation of the Monobit algorithm outlined in section 2.1 of [SP 800-22 Rev. 1a](http://csrc.nist.gov/publications/nistpubs/800-22-rev1a/SP800-22rev1a.pdf).
 
 Checks that the numbers of 0 and 1 bits in the produced values are equal to within a certain tolerance.
+
+## License
+
+Provided under the terms of the MIT license.
+See LICENSE.txt for more information.
