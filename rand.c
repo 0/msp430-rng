@@ -12,7 +12,7 @@
  *
  * @return 16 random bits generated from a hardware source.
  */
-unsigned int rand() {
+unsigned int rand(void) {
 	int i, j;
 	unsigned int result = 0;
 
@@ -60,5 +60,5 @@ unsigned int rand() {
  * @return Next state of the generator.
  */
 unsigned int prand(unsigned int state) {
-	return (M * state + I);                   // Generate the next state of the LCG
+	return M * state + I;                     // Generate the next state of the LCG
 }

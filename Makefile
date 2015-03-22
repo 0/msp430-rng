@@ -1,5 +1,5 @@
 CC = msp430-gcc
-CFLAGS = -Wall -Wno-main -Os -g -mmcu=msp430x2211
+CFLAGS = -Wall -Wextra -Wno-main -Os -g -mmcu=msp430x2211
 
 .PHONY: rand test clean
 

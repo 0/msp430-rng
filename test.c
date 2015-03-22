@@ -19,7 +19,7 @@ int failure = 0;
 /**
  * Set up the timers and blink!
  */
-void prepare_to_blink() {
+void prepare_to_blink(void) {
 	BCSCTL3 |= LFXT1S_2;                      // Set LF to VLO = 12 KHz
 	BCSCTL1 |= DIVA_1;                        // ACLK = LF / 2 = 6 KHz
 
@@ -30,7 +30,7 @@ void prepare_to_blink() {
 	__bis_SR_register(LPM3_bits | GIE);       // LPM3 w/ interrupt
 }
 
-interrupt(TIMERA1_VECTOR) blink_LED() {
+interrupt(TIMERA1_VECTOR) blink_LED(void) {
 	TACCTL1 &= ~CCIFG;                        // Unset interrupt flag
 
 	if (failure)                              // Toggle LEDs
@@ -46,32 +46,33 @@ interrupt(TIMERA1_VECTOR) blink_LED() {
  * http://csrc.nist.gov/publications/nistpubs/800-22-rev1a/SP800-22rev1a.pdf
  ******************************************************************************/
 
-/* The hardware RNG is slow, so limit test to 400 bits. */
-#define MONOBIT_TIMES_RAND 25                 // 400 / BITS_RAND
+/* The hardware RNG is slow, so limit test to 800 bits. */
+#define MONOBIT_TIMES_RAND 50                 // 800 / BITS_RAND
 
 /* Each 8-bit number tested with monobit contributes 8 bits, so in the worst
  * case, the signed 16-bit bucket can store information about this many
  * numbers: */
-#define MONOBIT_TIMES_PRAND 4095              // (2 ^ 15 - 1) / BITS_PRAND
+#define MONOBIT_TIMES_PRAND 4095              // (2^15-1) / BITS_PRAND
 
 /* The maximum absolute value of the sum bucket after a monobit test, where
  * 0.01 is the minimum P-value and inverfc is the inverse of the complementary
  * error function. */
-#define MONOBIT_MAX_VAL_RAND  51              // inverfc(0.01) * sqrt(2) * sqrt(400)
-#define MONOBIT_MAX_VAL_PRAND 466             // inverfc(0.01) * sqrt(2) * sqrt(2 ^ 15 - 1)
+#define MONOBIT_MAX_VAL_RAND  72              // inverfc(0.01) * sqrt(2) * sqrt(800)
+#define MONOBIT_MAX_VAL_PRAND 466             // inverfc(0.01) * sqrt(2) * sqrt(2^15-1)
 
 /**
  * Monobit test for rand().
  *
  * Returns 0 on success; otherwise otherwise.
  */
-int monobit_rand() {
+int monobit_rand(void) {
 	int sum = 0;
 
 	int i, j;
 
 	for (i = 0; i < MONOBIT_TIMES_RAND; i++) {
-		int r = rand();
+		/* Ignore the least significant bits. */
+		unsigned int r = rand() >> (16 - BITS_RAND);
 
 		/* Add up all the bits, taking 0 to mean -1. */
 		for (j = 0; j < BITS_RAND; j++) {
@@ -92,13 +93,14 @@ int monobit_rand() {
  * Returns 0 on success; otherwise otherwise.
  */
 int monobit_prand() {
-	int state = rand();
+	unsigned int state = rand();
 	int sum = 0;
 
 	int i, j;
 
 	for (i = 0; i < MONOBIT_TIMES_PRAND; i++) {
-		int r = state >> (16 - BITS_PRAND);   // Ignore the least significant bits
+		/* Ignore the least significant bits. */
+		unsigned int r = state >> (16 - BITS_PRAND);
 
 		/* Add up all the bits, taking 0 to mean -1. */
 		for (j = 0; j < BITS_PRAND; j++) {
@@ -121,7 +123,7 @@ int monobit_prand() {
  *
  * Never returns!
  */
-void fail(int code) {
+void fail(unsigned int code) {
 	__asm__ __volatile__("push %0" : : "r" (code));
 
 	failure = 1;
@@ -136,7 +138,9 @@ void fail(int code) {
  * Both LEDs are lit up while testing, and one will blink once the tests are
  * done, depending on the outcome.
  */
-void main() {
+void main(void) {
+	WDTCTL = WDTPW | WDTHOLD;                 // Stop the dog
+
 	LED_DIR |= LED_RED | LED_GREEN;
 	LED_OUT |= LED_RED | LED_GREEN;
 
