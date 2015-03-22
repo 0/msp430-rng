@@ -36,6 +36,20 @@ Patches with modifications for other environments are welcome.
 ## Tests
 
 To run the tests, `make test` and run `test.elf` on your MSP430.
+They should take less than a minute to finish.
+
+The test mechanism assumes that you are using a Launchpad, with LEDs on pins 0 and 6.
+While the tests are running, both LEDs are on; when the tests finish, one of the LEDs blinks (green: pass, red: fail).
+
+Using [mspdebug](http://mspdebug.sourceforge.net/), it is easy to see which test is failing and possibly why:
+```
+prog test.elf
+run
+^C
+md status 2
+md sum_rand 2
+md sum_prand 2
+```
 
 ### Monobit
 
