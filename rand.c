@@ -5,7 +5,10 @@
 /**
  * Random number generator.
  *
- * NOTE: This affects Timer A.
+ * It is recommended that this function is run during setup, before any clocks
+ * or timers have been set and before interrupts have been enabled. While it
+ * does restore all used control registers to their original values, it also
+ * expects that nothing interesting will happen when it modifies them.
  *
  * Algorithm from TI SLAA338:
  * http://www.ti.com/sc/docs/psheets/abstract/apps/slaa338.htm
@@ -17,10 +20,15 @@ unsigned int rand(void) {
 	unsigned int result = 0;
 
 	/* Save state */
+	unsigned int BCSCTL3_old = BCSCTL3;
 	unsigned int TACCTL0_old = TACCTL0;
 	unsigned int TACTL_old = TACTL;
 
+	/* Halt timer */
+	TACTL = 0x0;
+
 	/* Set up timer */
+	BCSCTL3 = (~LFXT1S_3 & BCSCTL3) | LFXT1S_2; // Source ACLK from VLO
 	TACCTL0 = CAP | CM_1 | CCIS_1;            // Capture mode, positive edge
 	TACTL = TASSEL_2 | MC_2;                  // SMCLK, continuous up
 
@@ -44,6 +52,7 @@ unsigned int rand(void) {
 	}
 
 	/* Restore state */
+	BCSCTL3 = BCSCTL3_old;
 	TACCTL0 = TACCTL0_old;
 	TACTL = TACTL_old;
 

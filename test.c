@@ -38,19 +38,16 @@ void __attribute__((interrupt(TIMERA1_VECTOR))) blink(void) {
  * http://csrc.nist.gov/publications/nistpubs/800-22-rev1a/SP800-22rev1a.pdf
  ******************************************************************************/
 
-/* The hardware RNG is slow, so limit test to 800 bits. */
-#define MONOBIT_TIMES_RAND 50                 // 800 / BITS_RAND
-
-/* Each 8-bit number tested with monobit contributes 8 bits, so in the worst
- * case, the signed 16-bit bucket can store information about this many
- * numbers: */
+/* Each n-bit number tested with monobit contributes n bits, so in the worst
+ * case (all bits the same), the signed 16-bit bucket can store information
+ * about this many numbers: */
+#define MONOBIT_TIMES_RAND  2047              // (2^15-1) / BITS_RAND
 #define MONOBIT_TIMES_PRAND 4095              // (2^15-1) / BITS_PRAND
 
 /* The maximum absolute value of the sum bucket after a monobit test, where
  * 0.01 is the minimum P-value and inverfc is the inverse of the complementary
  * error function. */
-#define MONOBIT_MAX_VAL_RAND  72              // inverfc(0.01) * sqrt(2) * sqrt(800)
-#define MONOBIT_MAX_VAL_PRAND 466             // inverfc(0.01) * sqrt(2) * sqrt(2^15-1)
+#define MONOBIT_MAX_VAL 466                   // inverfc(0.01) * sqrt(2) * sqrt(2^15-1)
 
 /**
  * Monobit test for rand().
@@ -74,7 +71,7 @@ int monobit_rand(void) {
 	if (sum_rand < 0)
 		sum_rand = 0 - sum_rand;              // Absolute value
 
-	return sum_rand <= MONOBIT_MAX_VAL_RAND ? SUCCESS : FAIL_RAND;
+	return sum_rand <= MONOBIT_MAX_VAL ? SUCCESS : FAIL_RAND;
 }
 
 /**
@@ -102,7 +99,7 @@ int monobit_prand() {
 	if (sum_prand < 0)
 		sum_prand = 0 - sum_prand;            // Absolute value
 
-	return sum_prand <= MONOBIT_MAX_VAL_PRAND ? SUCCESS : FAIL_PRAND;
+	return sum_prand <= MONOBIT_MAX_VAL ? SUCCESS : FAIL_PRAND;
 }
 
 /**

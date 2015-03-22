@@ -16,7 +16,7 @@ Random and pseudorandom number generation for the MSP430, implemented in C.
 
 Truly random number generator.
 Uses the time difference between the VLO and DCO, as outlined in [SLAA338](http://www.ti.com/sc/docs/psheets/abstract/apps/slaa338.htm).
-Rather slow, and is only intended to be used to generate seeds for a PRNG.
+It is self-contained, but it mucks about with clocks and timers, so it is only intended to be used very early on to generate the seed for a PRNG.
 
 ### Pseudorandom (`prand()`)
 
