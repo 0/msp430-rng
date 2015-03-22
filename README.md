@@ -7,7 +7,7 @@ Random and pseudorandom number generation for the MSP430, implemented in C.
 
 1. `make rand`
 1. `#include "msp430-rng/rand.h"`
-1. `msp430-gcc -o foo.elf foo.o rand.o`
+1. `msp430-elf-gcc -o foo.elf foo.o rand.o`
 
 
 ## Generators
@@ -25,6 +25,12 @@ A very simple and fast PRNG implemented by a linear congruential generator with 
 * **modulus**: 65536 (2^16)
 * **multiplier**: 49381
 * **increment**: 8643
+
+
+## Supported compilers
+
+Currently only tested using the gcc `msp430-elf` [cross-compiler](https://gcc.gnu.org/onlinedocs/gcc/MSP430-Options.html) (not [mspgcc](http://sourceforge.net/projects/mspgcc/)).
+Patches with modifications for other environments are welcome.
 
 
 ## Tests

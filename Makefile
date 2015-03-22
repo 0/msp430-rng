@@ -1,5 +1,5 @@
-CC = msp430-gcc
-CFLAGS = -Wall -Wextra -Wno-main -Os -g -mmcu=msp430x2211
+CC = msp430-elf-gcc
+CFLAGS = -Wall -Wextra -Wno-main -Os -g -mmcu=msp430g2211 -specs=nosys.specs
 
 .PHONY: rand test clean
 

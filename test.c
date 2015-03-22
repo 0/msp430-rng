@@ -1,5 +1,4 @@
-#include <io.h>
-#include <signal.h>
+#include <msp430.h>
 
 #include "rand.h"
 
@@ -30,7 +29,7 @@ void prepare_to_blink(void) {
 	__bis_SR_register(LPM3_bits | GIE);       // LPM3 w/ interrupt
 }
 
-interrupt(TIMERA1_VECTOR) blink_LED(void) {
+void __attribute__((interrupt(TIMERA1_VECTOR))) blink_LED(void) {
 	TACCTL1 &= ~CCIFG;                        // Unset interrupt flag
 
 	if (failure)                              // Toggle LEDs
